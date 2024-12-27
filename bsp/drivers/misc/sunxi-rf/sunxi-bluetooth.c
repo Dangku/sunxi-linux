@@ -31,6 +31,8 @@
 #include "internal.h"
 #include "sunxi-rfkill.h"
 
+//#define SUNXI_BLUETOOTH_RFKILL
+
 static struct sunxi_bt_platdata *bluetooth_data;
 static const struct of_device_id sunxi_bt_ids[];
 
@@ -145,7 +147,7 @@ static int sunxi_bt_on(struct sunxi_bt_platdata *data, bool on_off)
 	return 0;
 }
 
-#ifdef SUNXI_RFKILL_BLUETOOTH
+#ifdef SUNXI_BLUETOOTH_RFKILL
 static int sunxi_bt_set_block(void *data, bool blocked)
 {
 	struct sunxi_bt_platdata *platdata = data;
@@ -386,14 +388,16 @@ int sunxi_bt_deinit(struct platform_device *pdev)
 	if (!data)
 		return 0;
 
-	sysfs_remove_group(&sunxi_bluetooth_dev.this_device->kobj,
-			&misc_attribute_group);
-
+#ifdef SUNXI_BLUETOOTH_RFKILL
 	rfk = data->rfkill;
 	if (rfk) {
 		rfkill_unregister(rfk);
 		rfkill_destroy(rfk);
 	}
+#else
+	sysfs_remove_group(&sunxi_bluetooth_dev.this_device->kobj,
+			&misc_attribute_group);
+#endif
 
 	if (data->power_state)
 		sunxi_bluetooth_set_power(0);

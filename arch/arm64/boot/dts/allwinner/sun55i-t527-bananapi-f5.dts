@@ -69,6 +69,8 @@
 		regulator-enable-ramp-delay = <1000>;
 		gpio = <&r_pio PL 10 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
+		regulator-always-on;
+		regulator-boot-on;
 	};
 
 	reg_usb1_vbus: usb1-vbus {
@@ -289,9 +291,9 @@
 			240 241 242 243 244 245 246 247
 			248 249 250 251 252 253 254 255>;
 		default-brightness-level = <200>;
-		enable-gpios = <&pio PI 5 GPIO_ACTIVE_HIGH>;
-		/* power-supply = <&reg_backlight_12v>; */
-		pwms = <&pwm0 5 5000000 0>;
+		enable-gpios = <&pio PI 15 GPIO_ACTIVE_HIGH>;
+		power-supply = <&vdd5v0_sys>;
+		pwms = <&pwm1 1 5000000 0>;
 	};
 
 	edp_panel: edp_panel {
@@ -302,19 +304,19 @@
 		backlight = <&edp_panel_backlight>;
 
 		panel-timing {
-			clock-frequency = <348577920>; /* pixel clock */
-			hactive = <2560>;
-			hback-porch = <120>;
-			hfront-porch = <88>;
-			hsync-len = <32>;
-			vactive = <1600>;
-			vback-porch = <71>;
-			vfront-porch = <28>;
+			clock-frequency = <138000000>; /* pixel clock */
+			hactive = <1920>;
+			hback-porch = <40>;
+			hfront-porch = <80>;
+			hsync-len = <40>;
+			vactive = <1080>;
+			vback-porch = <6>;
+			vfront-porch = <20>;
 			vsync-len = <5>;
 			/* hor_sync_polarity */
-			hsync-active = <1>;
+			hsync-active = <0>;
 			/* ver_sync_polarity */
-			vsync-active = <1>;
+			vsync-active = <0>;
 		};
 		ports {
 			#address-cells = <1>;
@@ -369,7 +371,7 @@
 			248 249 250 251 252 253 254 255>;
 		default-brightness-level = <200>;
 		enable-gpios = <&pio PJ 22 GPIO_ACTIVE_HIGH>;
-		pwms = <&pwm0 4 50000 0>;
+		pwms = <&mcu_pwm0 6 50000 0>;
 	};
 
 	backlight1: backlight1 {
@@ -409,9 +411,10 @@
 			240 241 242 243 244 245 246 247
 			248 249 250 251 252 253 254 255>;
 		default-brightness-level = <200>;
-		enable-gpios = <&pio PI 5 GPIO_ACTIVE_HIGH>;
-		pwms = <&pwm0 5 5000000 0>;
+		enable-gpios = <&pio PJ 25 GPIO_ACTIVE_HIGH>;
+		pwms = <&mcu_pwm0 7 5000000 0>;
 	};
+
 	lvds_panel: lvds_panel@0 {
 		compatible = "sunxi-lvds";
 		status = "disabled";
@@ -492,9 +495,23 @@
 };
 
 /* drm route */
-&disp0_hdmi {
+/*
+&disp1_hdmi {
         status = "okay";
 };
+
+&disp0_dsi0 {
+	status = "disabled";
+};
+
+&disp0_dsi1 {
+	status = "disabled";
+};
+
+&disp0_edp {
+	status = "disabled";
+};
+*/
 
 &vo0 {
 	status = "okay";
@@ -505,6 +522,10 @@
 };
 
 &dlcd0 {
+	status = "disabled";
+};
+
+&dlcd1 {
 	status = "disabled";
 };
 
@@ -527,6 +548,7 @@
 		};
 	};
 };
+
 &lvds0 {
 	status = "disabled";
 //	dual-channel = <0>;
@@ -539,6 +561,507 @@
 			lvds_panel_out: endpoint@0 {
 				reg = <0>;
 				remote-endpoint = <&lvds_panel_in>;
+			};
+		};
+	};
+};
+
+&dsi0 {
+	status = "disabled";
+	pinctrl-0 = <&dsi0_4lane_pins_a>;
+	pinctrl-1 = <&dsi0_4lane_pins_b>;
+	pinctrl-names = "active","sleep";
+
+	dsi0_panel: dsi0_panel@0 {
+		compatible = "panel-dsi";
+		status = "disabled";
+		reg = <0>;
+		//power0-supply = <&reg_aldo2>;   //mipi io
+		power1-supply = <&reg_bldo4>;   //control io
+		//power2-supply = <&reg_ext_axp1530_dldo1>;  //vdd1v8_dsi
+		power3-supply = <&vdd5v0_sys>;   //vdd5v0_dsi
+
+		enable0-gpios = <&pio PJ 20 GPIO_ACTIVE_HIGH>; //power
+		reset-gpios = <&pio PJ 21 GPIO_ACTIVE_LOW>; //reset
+		reset-num = <1>;
+
+		enable-delay-ms = <500>;
+		reset-delay-ms = <500>;
+
+		backlight = <&backlight0>;
+		dsi,flags = <MIPI_DSI_MODE_VIDEO>;
+		dsi,lanes = <4>;
+		dsi,format = <0>;
+		panel-init-sequence = [
+
+			39 00 04 FF 98 81 03
+			15 00 02 01 00
+			15 00 02 02 00
+			15 00 02 03 73
+			15 00 02 04 13
+			15 00 02 05 00
+			15 00 02 06 0A
+			15 00 02 07 05
+			15 00 02 08 00
+			15 00 02 09 28
+			15 00 02 0a 00
+			15 00 02 0b 00
+			15 00 02 0c 00
+			15 00 02 0d 28
+			15 00 02 0e 00
+			15 00 02 0f 28
+			15 00 02 10 28
+			15 00 02 11 00
+			15 00 02 12 00
+			15 00 02 13 00
+			15 00 02 14 00
+			15 00 02 15 00
+			15 00 02 16 00
+			15 00 02 17 00
+			15 00 02 18 00
+			15 00 02 19 00
+			15 00 02 1a 00
+			15 00 02 1b 00
+			15 00 02 1c 00
+			15 00 02 1d 00
+			15 00 02 1e 40
+			15 00 02 1f 80
+			15 00 02 20 06
+			15 00 02 21 01
+			15 00 02 22 00
+			15 00 02 23 00
+			15 00 02 24 00
+			15 00 02 25 00
+			15 00 02 26 00
+			15 00 02 27 00
+			15 00 02 28 33
+			15 00 02 29 33
+			15 00 02 2a 00
+			15 00 02 2b 00
+			15 00 02 2c 04
+			15 00 02 2d 04
+			15 00 02 2e 05
+			15 00 02 2f 05
+			15 00 02 30 00
+			15 00 02 31 00
+			15 00 02 32 31
+			15 00 02 33 00
+			15 00 02 34 00
+			15 00 02 35 0A
+			15 00 02 36 00
+			15 00 02 37 08
+			15 00 02 38 00
+			15 00 02 39 00
+			15 00 02 3a 00
+			15 00 02 3b 00
+			15 00 02 3c 00
+			15 00 02 3d 00
+			15 00 02 3e 00
+			15 00 02 3f 00
+			15 00 02 40 00
+			15 00 02 41 00
+			15 00 02 42 00
+			15 00 02 43 08
+			15 00 02 44 00
+			15 00 02 50 01
+			15 00 02 51 23
+			15 00 02 52 44
+			15 00 02 53 67
+			15 00 02 54 89
+			15 00 02 55 ab
+			15 00 02 56 01
+			15 00 02 57 23
+			15 00 02 58 45
+			15 00 02 59 67
+			15 00 02 5a 89
+			15 00 02 5b ab
+			15 00 02 5c cd
+			15 00 02 5d ef
+			15 00 02 5e 11
+			15 00 02 5f 02
+			15 00 02 60 08
+			15 00 02 61 0E
+			15 00 02 62 0F
+			15 00 02 63 0C
+			15 00 02 64 0D
+			15 00 02 65 17
+			15 00 02 66 01
+			15 00 02 67 01
+			15 00 02 68 02
+			15 00 02 69 02
+			15 00 02 6a 00
+			15 00 02 6b 00
+			15 00 02 6c 02
+			15 00 02 6d 02
+			15 00 02 6e 16
+			15 00 02 6f 16
+			15 00 02 70 06
+			15 00 02 71 06
+			15 00 02 72 07
+			15 00 02 73 07
+			15 00 02 74 02
+			15 00 02 75 02
+			15 00 02 76 08
+			15 00 02 77 0E
+			15 00 02 78 0F
+			15 00 02 79 0C
+			15 00 02 7a 0D
+			15 00 02 7b 17
+			15 00 02 7c 01
+			15 00 02 7d 01
+			15 00 02 7e 02
+			15 00 02 7f 02
+			15 00 02 80 00
+			15 00 02 81 00
+			15 00 02 82 02
+			15 00 02 83 02
+			15 00 02 84 16
+			15 00 02 85 16
+			15 00 02 86 06
+			15 00 02 87 06
+			15 00 02 88 07
+			15 00 02 89 07
+			15 00 02 8A 02
+			39 00 04 FF 98 81 04
+			15 00 02 6E 1A
+			15 00 02 6F 37
+			15 00 02 3B C0
+			15 00 02 8D 1F
+			15 00 02 87 BA
+			15 00 02 B2 D1
+			15 00 02 88 0B
+			15 00 02 38 01
+			15 00 02 39 00
+			15 00 02 B5 02
+			15 00 02 31 25
+			15 00 02 3B 98
+			39 00 04 FF 98 81 01
+			15 00 02 22 0A
+			15 00 02 31 00
+			15 00 02 53 62
+			15 00 02 55 7B
+			15 00 02 50 9E
+			15 00 02 51 99
+			15 00 02 60 06
+			15 00 02 62 20
+			15 00 02 B7 00
+			15 00 02 A0 00
+			15 00 02 A1 17
+			15 00 02 A2 26
+			15 00 02 A3 13
+			15 00 02 A4 16
+			15 00 02 A5 29
+			15 00 02 A6 1E
+			15 00 02 A7 1F
+			15 00 02 A8 8B
+			15 00 02 A9 1D
+			15 00 02 AA 2A
+			15 00 02 AB 7B
+			15 00 02 AC 1A
+			15 00 02 AD 19
+			15 00 02 AE 4E
+			15 00 02 AF 24
+			15 00 02 B0 29
+			15 00 02 B1 4F
+			15 00 02 B2 5C
+			15 00 02 B3 23
+			15 00 02 C0 00
+			15 00 02 C1 17
+			15 00 02 C2 26
+			15 00 02 C3 13
+			15 00 02 C4 16
+			15 00 02 C5 29
+			15 00 02 C6 1E
+			15 00 02 C7 1F
+			15 00 02 C8 8B
+			15 00 02 C9 1D
+			15 00 02 CA 2A
+			15 00 02 CB 7B
+			15 00 02 CC 1A
+			15 00 02 CD 19
+			15 00 02 CE 4E
+			15 00 02 CF 24
+			15 00 02 D0 29
+			15 00 02 D1 4F
+			15 00 02 D2 5C
+			15 00 02 D3 23
+
+			39 00 04 FF 98 81 00
+			15 00 02 35 00
+			05 78 01 11
+			05 78 01 29
+			39 00 04 FF 98 81 00
+		];
+
+		panel-exit-sequence = [
+			05 14 01 28
+			05 50 01 10
+		];
+
+		display-timings {
+			native-mode = <&dsi0_timing0>;
+
+			dsi0_timing0: timing0 {
+				clock-frequency = <67000000>;
+				hback-porch = <8>;
+				hactive = <800>;
+				hfront-porch = <24>;
+				hsync-len = <18>;
+				vback-porch = <8>;
+				vactive = <1280>;
+				vfront-porch = <24>;
+				vsync-len = <4>;
+			};
+		};
+	};
+
+};
+
+&dsi1 {
+	status = "disabled";
+	pinctrl-0 = <&dsi1_4lane_pins_a>;
+	pinctrl-1 = <&dsi1_4lane_pins_b>;
+	pinctrl-names = "active","sleep";
+
+	dsi1_panel: dsi1_panel@0 {
+		compatible = "panel-dsi";
+		status = "disabled";
+		reg = <0>;
+		//power0-supply = <&reg_aldo2>;   //mipi io
+		power1-supply = <&reg_bldo4>;   //control io
+		//power2-supply = <&reg_ext_axp1530_dldo1>;  //vdd1v8_dsi
+		power3-supply = <&vdd5v0_sys>;   //vdd5v0_dsi
+
+		enable0-gpios = <&pio PJ 23 GPIO_ACTIVE_HIGH>; //power
+		reset-gpios = <&pio PJ 24 GPIO_ACTIVE_LOW>; //reset
+		reset-num = <1>;
+
+		enable-delay-ms = <500>;
+		reset-delay-ms = <500>;
+
+		backlight = <&backlight1>;
+		dsi,flags = <MIPI_DSI_MODE_VIDEO>;
+		dsi,lanes = <4>;
+		dsi,format = <0>;
+		panel-init-sequence = [
+
+			39 00 04 FF 98 81 03
+			15 00 02 01 00
+			15 00 02 02 00
+			15 00 02 03 73
+			15 00 02 04 13
+			15 00 02 05 00
+			15 00 02 06 0A
+			15 00 02 07 05
+			15 00 02 08 00
+			15 00 02 09 28
+			15 00 02 0a 00
+			15 00 02 0b 00
+			15 00 02 0c 00
+			15 00 02 0d 28
+			15 00 02 0e 00
+			15 00 02 0f 28
+			15 00 02 10 28
+			15 00 02 11 00
+			15 00 02 12 00
+			15 00 02 13 00
+			15 00 02 14 00
+			15 00 02 15 00
+			15 00 02 16 00
+			15 00 02 17 00
+			15 00 02 18 00
+			15 00 02 19 00
+			15 00 02 1a 00
+			15 00 02 1b 00
+			15 00 02 1c 00
+			15 00 02 1d 00
+			15 00 02 1e 40
+			15 00 02 1f 80
+			15 00 02 20 06
+			15 00 02 21 01
+			15 00 02 22 00
+			15 00 02 23 00
+			15 00 02 24 00
+			15 00 02 25 00
+			15 00 02 26 00
+			15 00 02 27 00
+			15 00 02 28 33
+			15 00 02 29 33
+			15 00 02 2a 00
+			15 00 02 2b 00
+			15 00 02 2c 04
+			15 00 02 2d 04
+			15 00 02 2e 05
+			15 00 02 2f 05
+			15 00 02 30 00
+			15 00 02 31 00
+			15 00 02 32 31
+			15 00 02 33 00
+			15 00 02 34 00
+			15 00 02 35 0A
+			15 00 02 36 00
+			15 00 02 37 08
+			15 00 02 38 00
+			15 00 02 39 00
+			15 00 02 3a 00
+			15 00 02 3b 00
+			15 00 02 3c 00
+			15 00 02 3d 00
+			15 00 02 3e 00
+			15 00 02 3f 00
+			15 00 02 40 00
+			15 00 02 41 00
+			15 00 02 42 00
+			15 00 02 43 08
+			15 00 02 44 00
+			15 00 02 50 01
+			15 00 02 51 23
+			15 00 02 52 44
+			15 00 02 53 67
+			15 00 02 54 89
+			15 00 02 55 ab
+			15 00 02 56 01
+			15 00 02 57 23
+			15 00 02 58 45
+			15 00 02 59 67
+			15 00 02 5a 89
+			15 00 02 5b ab
+			15 00 02 5c cd
+			15 00 02 5d ef
+			15 00 02 5e 11
+			15 00 02 5f 02
+			15 00 02 60 08
+			15 00 02 61 0E
+			15 00 02 62 0F
+			15 00 02 63 0C
+			15 00 02 64 0D
+			15 00 02 65 17
+			15 00 02 66 01
+			15 00 02 67 01
+			15 00 02 68 02
+			15 00 02 69 02
+			15 00 02 6a 00
+			15 00 02 6b 00
+			15 00 02 6c 02
+			15 00 02 6d 02
+			15 00 02 6e 16
+			15 00 02 6f 16
+			15 00 02 70 06
+			15 00 02 71 06
+			15 00 02 72 07
+			15 00 02 73 07
+			15 00 02 74 02
+			15 00 02 75 02
+			15 00 02 76 08
+			15 00 02 77 0E
+			15 00 02 78 0F
+			15 00 02 79 0C
+			15 00 02 7a 0D
+			15 00 02 7b 17
+			15 00 02 7c 01
+			15 00 02 7d 01
+			15 00 02 7e 02
+			15 00 02 7f 02
+			15 00 02 80 00
+			15 00 02 81 00
+			15 00 02 82 02
+			15 00 02 83 02
+			15 00 02 84 16
+			15 00 02 85 16
+			15 00 02 86 06
+			15 00 02 87 06
+			15 00 02 88 07
+			15 00 02 89 07
+			15 00 02 8A 02
+			39 00 04 FF 98 81 04
+			15 00 02 6E 1A
+			15 00 02 6F 37
+			15 00 02 3B C0
+			15 00 02 8D 1F
+			15 00 02 87 BA
+			15 00 02 B2 D1
+			15 00 02 88 0B
+			15 00 02 38 01
+			15 00 02 39 00
+			15 00 02 B5 02
+			15 00 02 31 25
+			15 00 02 3B 98
+			39 00 04 FF 98 81 01
+			15 00 02 22 0A
+			15 00 02 31 00
+			15 00 02 53 62
+			15 00 02 55 7B
+			15 00 02 50 9E
+			15 00 02 51 99
+			15 00 02 60 06
+			15 00 02 62 20
+			15 00 02 B7 00
+			15 00 02 A0 00
+			15 00 02 A1 17
+			15 00 02 A2 26
+			15 00 02 A3 13
+			15 00 02 A4 16
+			15 00 02 A5 29
+			15 00 02 A6 1E
+			15 00 02 A7 1F
+			15 00 02 A8 8B
+			15 00 02 A9 1D
+			15 00 02 AA 2A
+			15 00 02 AB 7B
+			15 00 02 AC 1A
+			15 00 02 AD 19
+			15 00 02 AE 4E
+			15 00 02 AF 24
+			15 00 02 B0 29
+			15 00 02 B1 4F
+			15 00 02 B2 5C
+			15 00 02 B3 23
+			15 00 02 C0 00
+			15 00 02 C1 17
+			15 00 02 C2 26
+			15 00 02 C3 13
+			15 00 02 C4 16
+			15 00 02 C5 29
+			15 00 02 C6 1E
+			15 00 02 C7 1F
+			15 00 02 C8 8B
+			15 00 02 C9 1D
+			15 00 02 CA 2A
+			15 00 02 CB 7B
+			15 00 02 CC 1A
+			15 00 02 CD 19
+			15 00 02 CE 4E
+			15 00 02 CF 24
+			15 00 02 D0 29
+			15 00 02 D1 4F
+			15 00 02 D2 5C
+			15 00 02 D3 23
+
+			39 00 04 FF 98 81 00
+			15 00 02 35 00
+			05 78 01 11
+			05 78 01 29
+			39 00 04 FF 98 81 00
+		];
+
+		panel-exit-sequence = [
+			05 14 01 28
+			05 50 01 10
+		];
+
+		display-timings {
+			native-mode = <&dsi1_timing0>;
+
+			dsi1_timing0: timing0 {
+				clock-frequency = <67000000>;
+				hback-porch = <8>;
+				hactive = <800>;
+				hfront-porch = <24>;
+				hsync-len = <18>;
+				vback-porch = <8>;
+				vactive = <1280>;
+				vfront-porch = <24>;
+				vsync-len = <4>;
 			};
 		};
 	};
@@ -582,11 +1105,14 @@
 &drm_edp {
 	status = "disabled";
 
+	edp_lane_rate = <1>;
+        edp_lane_cnt = <2>;
 	edp_colordepth = <8>; /* 6/8/10/12/16 */
 	edp_color_fmt = <0>; /* 0:RGB  1: YUV444  2: YUV422 */
 
 	vcc-edp-supply = <&reg_bldo3>;
 	vdd-edp-supply = <&reg_dcdc2>;
+
 	ports {
 		edp_out: port@1 {
 			#address-cells = <1>;
@@ -666,6 +1192,28 @@
 		pins = "PL11";
 		function = "gpio_in";
 	};
+
+	mcu_pwm0_6_pin_active: mcu_pwm0_6@0 {
+                pins = "PM4";
+                function = "mcu_pwm0_6";
+                drive-strength = <10>;
+        };
+
+        mcu_pwm0_6_pin_sleep: mcu_pwm0_6@1 {
+                pins = "PM4";
+                function = "mcu_pwm0_6";
+        };
+
+	mcu_pwm0_7_pin_active: mcu_pwm0_7@0 {
+                pins = "PM5";
+                function = "mcu_pwm0_7";
+                drive-strength = <10>;
+        };
+
+        mcu_pwm0_7_pin_sleep: mcu_pwm0_7@1 {
+                pins = "PM5";
+                function = "mcu_pwm0_7";
+        };
 };
 
 &pio {
@@ -912,6 +1460,17 @@
 		pins = "PI13";
 		function = "gpio_out";
 	};
+
+	pwm1_1_pin_active: pwm1_1@0 {
+                pins = "PI16";
+                function = "pwm1_1";
+                drive-strength = <10>;
+        };
+
+        pwm1_1_pin_sleep: pwm1_1@1 {
+                pins = "PI16";
+                function = "gpio_in";
+        };
 
 	ledc_pins_a: ledc@0 {
 		pins = "PG0";
@@ -1572,6 +2131,27 @@
 	status = "okay";
 };
 
+&pwm1_1 {
+	pinctrl-names = "active", "sleep";
+	pinctrl-0 = <&pwm1_1_pin_active>;
+	pinctrl-1 = <&pwm1_1_pin_sleep>;
+	status = "okay";
+};
+
+&mcu_pwm0_6 {
+	pinctrl-names = "active", "sleep";
+	pinctrl-0 = <&mcu_pwm0_6_pin_active>;
+	pinctrl-1 = <&mcu_pwm0_6_pin_sleep>;
+	status = "okay";
+};
+
+&mcu_pwm0_7 {
+	pinctrl-names = "active", "sleep";
+	pinctrl-0 = <&mcu_pwm0_7_pin_active>;
+	pinctrl-1 = <&mcu_pwm0_7_pin_sleep>;
+	status = "okay";
+};
+
 &ledc  {
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&ledc_pins_a>;
@@ -1597,6 +2177,60 @@
 	/* For stability and backwards compatibility, we recommend setting ‘twi_drv_used’ to 1 */
 	twi_drv_used = <1>;
 	status = "disabled";
+
+	gt9xx: gt9xx@5d {
+		compatible = "goodix,gt9xx";
+		reg = <0x5d>;
+		status = "disabled";
+		irq-gpios = <&pio PD 20 GPIO_ACTIVE_LOW>;
+		irq-flags = <2>;
+		reset-gpios = <&pio PD 21 GPIO_ACTIVE_LOW>;
+		vdd_ana-supply = <&vdd5v0_sys>;
+		vcc_i2c-supply = <&reg_aldo2>;
+
+		touchscreen-max-id = <11>;
+		touchscreen-size-x = <800>;
+		touchscreen-size-y = <1280>;
+		touchscreen-max-w = <512>;
+		touchscreen-max-p = <512>;
+		//touchscreen-key-map = <172>, <158>; /*KEY_HOMEPAGE=172, KEY_BACK=158，KEY_MENU=139*/
+		goodix,slide-wakeup = <0>;
+		goodix,type-a-report = <1>;
+		goodix,driver-send-cfg = <1>;
+		goodix,send-cfg-id = <0>;
+		goodix,resume-in-workqueue = <0>;
+		goodix,int-sync = <1>;
+		goodix,revert_x = <0>;
+		goodix,revert_y = <0>;
+		goodix,swap-x2y = <0>;
+		goodix,tp_idle_support = <1>;
+		goodix,esd-protect = <1>;
+		goodix,auto-update-cfg = <0>;
+		goodix,power-off-sleep = <1>;
+		goodix,pen-suppress-finger = <0>;
+		/* GT911_HC070IY30025.cfg */
+		goodix,cfg-group0 = [
+			48 20 03 00 05 05 01 20 01 3F
+			19 0F 50 32 03 05 00 00 00 00
+			00 00 00 17 19 1C 14 8C 2E 0E
+			15 17 D3 07 00 00 00 02 03 1C
+			00 00 00 00 00 00 00 00 00 00
+			00 0F 2D 94 C5 02 07 00 00 04
+			A1 10 00 85 14 00 6B 1A 00 5B
+			20 00 4D 28 00 4D 00 00 00 00
+			00 00 00 00 00 00 00 00 00 00
+			00 00 00 00 00 00 00 00 00 00
+			00 00 00 00 00 00 00 00 00 00
+			00 00 1C 1A 18 16 14 12 10 0E
+			0C 0A 08 06 04 02 FF FF FF FF
+			FF FF FF FF FF FF FF FF FF FF
+			FF FF 2A 29 28 26 24 22 21 20
+			1F 1E 1D 1C 18 16 00 02 04 06
+			08 0A 0C 0F 10 12 13 14 FF FF
+			FF FF FF FF FF FF FF FF FF FF
+			FF FF FF FF 7B 01
+		];
+	};
 };
 
 &twi1 {
@@ -2204,9 +2838,9 @@
 			wakeup_usb_in;
 			wakeup_usb_out;
 
-			//det_acin_supply = <&gpio_power_supply>;
-			//pmu_acin_usbid_drv = <&pio PH 12 GPIO_ACTIVE_LOW>;
-			//pmu_vbus_det_gpio = <&pio PH 13 GPIO_ACTIVE_LOW>;
+			det_acin_supply = <&gpio_power_supply>;
+			pmu_acin_usbid_drv = <&pio PH 12 GPIO_ACTIVE_LOW>;
+			pmu_vbus_det_gpio = <&pio PH 13 GPIO_ACTIVE_LOW>;
 		};
 
 		gpio_power_supply: gpio_power_supply {
@@ -2602,6 +3236,60 @@
 	/* For stability and backwards compatibility, we recommend setting ‘twi_drv_used’ to 1 */
 	twi_drv_used = <1>;
 	status = "disabled";
+
+	gt9xx_secondary: gt9xx_secondary@5d {
+		compatible = "goodix,gt9xx_secondary";
+		reg = <0x5d>;
+		status = "okay";
+		irq-gpios = <&pio PJ 26 GPIO_ACTIVE_LOW>;
+		irq-flags = <2>;
+		reset-gpios = <&pio PJ 27 GPIO_ACTIVE_LOW>;
+		vdd_ana-supply = <&vdd5v0_sys>;
+		vcc_i2c-supply = <&reg_ext_axp1530_dldo1>;
+
+		touchscreen-max-id = <11>;
+		touchscreen-size-x = <800>;
+		touchscreen-size-y = <1280>;
+		touchscreen-max-w = <512>;
+		touchscreen-max-p = <512>;
+		//touchscreen-key-map = <172>, <158>; /*KEY_HOMEPAGE=172, KEY_BACK=158，KEY_MENU=139*/
+		goodix,slide-wakeup = <0>;
+		goodix,type-a-report = <1>;
+		goodix,driver-send-cfg = <1>;
+		goodix,send-cfg-id = <0>;
+		goodix,resume-in-workqueue = <0>;
+		goodix,int-sync = <1>;
+		goodix,revert_x = <0>;
+		goodix,revert_y = <0>;
+		goodix,swap-x2y = <0>;
+		goodix,tp_idle_support = <1>;
+		goodix,esd-protect = <1>;
+		goodix,auto-update-cfg = <0>;
+		goodix,power-off-sleep = <1>;
+		goodix,pen-suppress-finger = <0>;
+		/* GT911_HC070IY30025.cfg */
+		goodix,cfg-group0 = [
+			48 20 03 00 05 05 01 20 01 3F
+			19 0F 50 32 03 05 00 00 00 00
+			00 00 00 17 19 1C 14 8C 2E 0E
+			15 17 D3 07 00 00 00 02 03 1C
+			00 00 00 00 00 00 00 00 00 00
+			00 0F 2D 94 C5 02 07 00 00 04
+			A1 10 00 85 14 00 6B 1A 00 5B
+			20 00 4D 28 00 4D 00 00 00 00
+			00 00 00 00 00 00 00 00 00 00
+			00 00 00 00 00 00 00 00 00 00
+			00 00 00 00 00 00 00 00 00 00
+			00 00 1C 1A 18 16 14 12 10 0E
+			0C 0A 08 06 04 02 FF FF FF FF
+			FF FF FF FF FF FF FF FF FF FF
+			FF FF 2A 29 28 26 24 22 21 20
+			1F 1E 1D 1C 18 16 00 02 04 06
+			08 0A 0C 0F 10 12 13 14 FF FF
+			FF FF FF FF FF FF FF FF FF FF
+			FF FF FF FF 7B 01
+		];
+	};
 };
 
 /* emmc */
@@ -2763,9 +3451,9 @@
 	usb_port_type = <0x0>;
 	usb_detect_type = <0x2>;
 	usb_detect_mode = <0x0>;
-	//usb_id_gpio = <&r_pio PL 10 GPIO_ACTIVE_HIGH>;
-	//enable-active-high;
-	//usb_det_vbus_gpio = <&r_pio PM 5 GPIO_ACTIVE_HIGH>;
+	usb_id_gpio;
+	usb_det_vbus_gpio = "axp_ctrl";
+	usb_det_vbus_gpio;
 	//enable-active-high;
 	//detvbus_io-supply = <&reg_bldo1>;
 	usb_regulator_io = "nocare";
@@ -2902,16 +3590,16 @@
 	 * jack-det-debouce-time   = <250>;
 	 */
 
-	status = "okay";
+	status = "disabled";
 };
 
 &codec_plat {
-	status = "okay";
+	status = "disabled";
 };
 
 &codec_mach {
 	soundcard-mach,jack-support = <1>;
-	status = "okay";
+	status = "disabled";
 	soundcard-mach,cpu {
 		sound-dai = <&codec_plat>;
 	};

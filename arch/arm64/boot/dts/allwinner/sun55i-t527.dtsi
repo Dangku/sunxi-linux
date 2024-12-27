@@ -1427,7 +1427,7 @@
 			compatible = "allwinner,sunxi-drm";
 			fb_base = <0>;
 			status = "okay";
-			route {
+		/*	route {
 				disp0_lvds0: disp0_lvds0 {
 					status = "disabled";
 					endpoints = <&disp0_out_tcon0 &tcon0_out_lvds0>;
@@ -1508,7 +1508,7 @@
 					endpoints = <&disp1_out_tcon2 &tcon2_out_hdmi>;
 					logo,uboot = "bootlogo.bmp";
 				};
-			};
+			};*/
 		};
 
 		de: de@5000000 {
@@ -3333,7 +3333,7 @@
 			pwm-base = <0x16>;
 			sunxi-pwms = <&mcu_pwm0_0>, <&mcu_pwm0_1>, <&mcu_pwm0_2>, <&mcu_pwm0_3>,
 			<&mcu_pwm0_4>,<&mcu_pwm0_5>, <&mcu_pwm0_6>, <&mcu_pwm0_7>;
-			status = "disabled";
+			status = "okay";
 		};
 
 		mcu_pwm0_0: mcu_pwm0_0@7103010 {
