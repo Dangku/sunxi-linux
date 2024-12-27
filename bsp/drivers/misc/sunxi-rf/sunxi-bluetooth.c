@@ -382,7 +382,9 @@ fail_rfkill:
 int sunxi_bt_deinit(struct platform_device *pdev)
 {
 	struct sunxi_bt_platdata *data = bluetooth_data;
+#ifdef SUNXI_BLUETOOTH_RFKILL
 	struct rfkill *rfk;
+#endif
 	int i;
 
 	if (!data)
