@@ -418,7 +418,7 @@ static u8 gtp_get_points(struct goodix_ts_data *ts,
 		if (ts->pdata->revert_y)
 			points[i].y = ts->pdata->abs_size_y - points[i].y;
 
-		dev_dbg(&ts->client->dev, "report point [%d][%d %d %d]\n",
+		dev_info(&ts->client->dev, "report point [%d][%d %d %d]\n",
 			points[i].id, points[i].x, points[i].y, points[i].p);
 
 		/* pen device coordinate */
@@ -953,10 +953,10 @@ static int gtp_find_valid_cfg_data(struct goodix_ts_data *ts)
 	} else {
 		sensor_id = ts->pdata->send_cfg_id;
 	}
-	dev_dbg(&ts->client->dev, "Sensor_ID: %d", sensor_id);
+	dev_info(&ts->client->dev, "Sensor_ID: %d", sensor_id);
 	/* parse config data */
 #ifdef CONFIG_OF
-	dev_dbg(&ts->client->dev, "Get config data from device tree\n");
+	dev_info(&ts->client->dev, "Get config data from device tree\n");
 	ret = gtp_parse_dt_cfg(&ts->client->dev,
 			       &cfg->data[GTP_ADDR_LENGTH],
 			       &cfg->length, sensor_id);
@@ -967,7 +967,7 @@ static int gtp_find_valid_cfg_data(struct goodix_ts_data *ts)
 		return -EPERM;
 	}
 #else
-	dev_dbg(&ts->client->dev, "Get config data from header file\n");
+	dev_info(&ts->client->dev, "Get config data from header file\n");
 	if ((!cfg_info_len[1]) && (!cfg_info_len[2]) &&
 	    (!cfg_info_len[3]) && (!cfg_info_len[4]) &&
 	    (!cfg_info_len[5])) {
@@ -1040,15 +1040,17 @@ static s32 gtp_init_panel(struct goodix_ts_data *ts)
 	ret = gtp_i2c_read_dbl_check(ts->client, GTP_REG_CONFIG_DATA,
 				     &opr_buf[0], 1);
 	if (ret == SUCCESS) {
-		dev_dbg(&ts->client->dev,
+		dev_info(&ts->client->dev,
 			"Config Version: %d; IC Config Version: %d\n",
 			cfg->data[GTP_ADDR_LENGTH], opr_buf[0]);
 		flash_cfg_version = opr_buf[0];
 		drv_cfg_version = cfg->data[GTP_ADDR_LENGTH];
 
-		if (flash_cfg_version < 90 &&
-		    flash_cfg_version > drv_cfg_version)
+		if (flash_cfg_version > drv_cfg_version) {
+			dev_info(&ts->client->dev,
+			"BPI: force send new cfg\n");
 			cfg->data[GTP_ADDR_LENGTH] = 0x00;
+		}
 	} else {
 		dev_err(&ts->client->dev,
 			"Failed to get ic config version!No config sent\n");
