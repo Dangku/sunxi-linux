@@ -1383,7 +1383,7 @@ CONFIG_AW_IR_RX=y
 #
 # General Purpose ADC Drivers
 #
-CONFIG_AW_GPADC=y
+CONFIG_AW_GPADC=m
 # end of General Purpose ADC Drivers
 
 #

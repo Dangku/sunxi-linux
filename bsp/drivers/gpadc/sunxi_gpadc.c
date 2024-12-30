@@ -1646,6 +1646,7 @@ static int sunxi_gpadc_probe(struct platform_device *pdev)
 		dev_err(chip->dev, "failed to resource_get\n");
 		goto err0;
 	}
+	disable_irq_nosync(chip->irq_num);
 
 	global_gpadc[chip->controller_num] = *chip;
 
@@ -1681,6 +1682,7 @@ static int sunxi_gpadc_probe(struct platform_device *pdev)
 	sunxi_gpadc_iio_init(pdev);
 #endif
 
+	enable_irq(chip->irq_num);
 	dev_info(chip->dev, "sunxi_gpadc probe success\n");
 
 	return 0;

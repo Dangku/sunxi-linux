@@ -1999,16 +1999,28 @@
 };
 
 &gpadc0 {
-	channel_num = <2>;
-	channel_select = <3>;
-	channel_data_select = <3>;
-	channel_compare_select = <3>;
-	channel_cld_select = <3>;
-	channel_chd_select = <3>;
-	channel0_compare_lowdata = <1700000>;
-	channel0_compare_higdata = <1200000>;
-	channel1_compare_lowdata = <460000>;
-	channel1_compare_higdata = <1200000>;
+	channel_num = <8>;
+	channel_select = <0xff>;
+	channel_data_select = <0xff>;
+	channel_compare_select = <0xff>;
+	channel_cld_select = <0xff>;
+	channel_chd_select = <0xff>;
+	channel0_compare_lowdata = <0>;
+	channel0_compare_higdata = <0>;
+	channel1_compare_lowdata = <0>;
+	channel1_compare_higdata = <0>;
+	channel2_compare_lowdata = <0>;
+	channel2_compare_higdata = <0>;
+	channel3_compare_lowdata = <1800000>;
+	channel3_compare_higdata = <200000>;
+	channel4_compare_lowdata = <1800000>;
+	channel4_compare_higdata = <200000>;
+	channel5_compare_lowdata = <1800000>;
+	channel5_compare_higdata = <200000>;
+	channel6_compare_lowdata = <1800000>;
+	channel6_compare_higdata = <200000>;
+	channel7_compare_lowdata = <1800000>;
+	channel7_compare_higdata = <200000>;
 	status = "disabled";
 };
 
@@ -2135,21 +2147,21 @@
 	pinctrl-names = "active", "sleep";
 	pinctrl-0 = <&pwm1_1_pin_active>;
 	pinctrl-1 = <&pwm1_1_pin_sleep>;
-	status = "okay";
+	status = "disabled";
 };
 
 &mcu_pwm0_6 {
 	pinctrl-names = "active", "sleep";
 	pinctrl-0 = <&mcu_pwm0_6_pin_active>;
 	pinctrl-1 = <&mcu_pwm0_6_pin_sleep>;
-	status = "okay";
+	status = "disabled";
 };
 
 &mcu_pwm0_7 {
 	pinctrl-names = "active", "sleep";
 	pinctrl-0 = <&mcu_pwm0_7_pin_active>;
 	pinctrl-1 = <&mcu_pwm0_7_pin_sleep>;
-	status = "okay";
+	status = "disabled";
 };
 
 &ledc  {

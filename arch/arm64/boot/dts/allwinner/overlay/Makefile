@@ -25,6 +25,7 @@ dtbo-$(CONFIG_ARCH_SUNXI) += \
 	sun55i-t527-pwm13.dtbo \
 	sun55i-t527-spi1-spidev.dtbo \
 	sun55i-t527-spi2-spidev.dtbo \
+	sun55i-t527-edp-aml133x30.dtbo
 
 scr-$(CONFIG_ARCH_SUNXI) += \
 	sun55i-t527-fixup.scr

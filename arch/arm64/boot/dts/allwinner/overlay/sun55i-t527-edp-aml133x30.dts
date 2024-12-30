@@ -1,0 +1,54 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment@0 {
+		target = <&de>;
+
+		__overlay__ {
+			chn_cfg_mode = <3>;
+			status = "okay";
+		};
+	};
+
+	fragment@1 {
+		target = <&pwm1_1>;
+
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@2 {
+		target = <&edp_panel_backlight>;
+
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@3 {
+		target = <&edp_panel>;
+
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@4 {
+		target = <&drm_edp>;
+
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@5 {
+		target = <&tv1>;
+
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+};
