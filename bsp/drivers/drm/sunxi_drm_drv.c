@@ -48,6 +48,7 @@ struct sunxi_init_connecting {
 	//TODO add eotf colorspace etc
 };
 
+#if 0
 struct display_boot_info {
 	unsigned int de_id;
 	unsigned int tcon_id;
@@ -70,10 +71,11 @@ struct display_boot_info {
 	struct sunxi_logo_info logo;
 	struct list_head list;
 };
+#endif
 
 struct sunxi_drm_pri {
 	struct list_head connecting_head;
-	struct list_head boot_info_head;
+	//struct list_head boot_info_head;
 };
 
 extern struct platform_driver sunxi_de_platform_driver;
@@ -86,6 +88,7 @@ extern struct platform_driver sunxi_lvds_platform_driver;
 extern struct platform_driver sunxi_rgb_platform_driver;
 extern struct platform_driver sunxi_dsi_combo_phy_platform_driver;
 
+int sunxi_drm_fbdev_init(struct drm_device *dev);
 int sunxi_fbdev_init(struct drm_device *drm, struct display_channel_state *out_state);
 int sunxi_drm_plane_property_create(struct sunxi_drm_private *private);
 
@@ -489,6 +492,7 @@ static struct attribute_group sunxi_crtc_group = {
 
 static int __maybe_unused commit_init_connecting(struct drm_device *drm)
 {
+#if 0
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(drm);
 	struct drm_modeset_acquire_ctx ctx;
 	struct drm_atomic_state *state;
@@ -586,10 +590,14 @@ backoff:
 	drm_modeset_backoff(&ctx);
 
 	goto retry;
+#else
+	return 0;
+#endif
 }
 
 static int get_boot_display_info(struct drm_device *drm)
 {
+#if 0
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(drm);
 	struct display_boot_info *info;
 	struct drm_display_mode *mode;
@@ -660,12 +668,14 @@ static int get_boot_display_info(struct drm_device *drm)
 		of_node_put(mode_node);
 		of_node_put(routing);
 	}
+#endif
 	return 0;
 }
 
 static int init_connecting(struct drm_device *drm, struct drm_crtc **crtcs, unsigned int crtc_cnt,
 				struct drm_connector **connectors, unsigned int connector_cnt)
 {
+#if 0
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(drm);
 	struct sunxi_init_connecting *c;
 	struct sunxi_drm_device *sdrm;
@@ -758,12 +768,14 @@ static int init_connecting(struct drm_device *drm, struct drm_crtc **crtcs, unsi
 			DRM_ERROR("none mode found %s\n", __func__);
 		mutex_unlock(&drm->mode_config.mutex);
 	}
+#endif
 	return 0;
 }
 
 int sunxi_drm_get_logo_info(struct drm_device *dev, struct sunxi_logo_info *logo,
 				unsigned int *scn_w, unsigned int *scn_h)
 {
+#if 0
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(dev);
 	struct display_boot_info *info;
 	struct sunxi_init_connecting *c;
@@ -784,12 +796,13 @@ int sunxi_drm_get_logo_info(struct drm_device *dev, struct sunxi_logo_info *logo
 	} else {
 		memcpy(logo, &info->logo, sizeof(*logo));
 	}
-
+#endif
 	return 0;
 }
 
 bool sunxi_drm_check_if_need_sw_enable(struct drm_connector *connector)
 {
+#if 0
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(connector->dev);
 	struct sunxi_init_connecting *c;
 	struct display_boot_info *info;
@@ -802,12 +815,14 @@ bool sunxi_drm_check_if_need_sw_enable(struct drm_connector *connector)
 		if (!c->done && connector == c->connector)
 			return true;
 	}
+#endif
 	return false;
 }
 
 bool sunxi_drm_check_device_boot_enabled(struct drm_device *drm,
 			unsigned int connector_type, unsigned int hw_id)
 {
+#if 0
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(drm);
 	struct display_boot_info *info;
 
@@ -816,12 +831,13 @@ bool sunxi_drm_check_device_boot_enabled(struct drm_device *drm,
 			 (info->hw_id == hw_id))
 			return true;
 	}
-
+#endif
 	return false;
 }
 
 void sunxi_drm_signal_sw_enable_done(struct drm_crtc *crtc)
 {
+#if 0
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(crtc->dev);
 	struct sunxi_init_connecting *c;
 	list_for_each_entry(c, &pri->priv->connecting_head, list) {
@@ -830,10 +846,12 @@ void sunxi_drm_signal_sw_enable_done(struct drm_crtc *crtc)
 			c->done = true;
 		}
 	}
+#endif
 }
 
 static int __maybe_unused setup_bootloader_connecting_state(struct drm_device *drm)
 {
+#if 0
 	struct drm_connector_list_iter conn_iter;
 	struct drm_connector *connector, **connectors = NULL;
 	unsigned int connector_count = 0;
@@ -879,6 +897,9 @@ free_connectors:
 		drm_connector_put(connectors[i]);
 	kfree(connectors);
 	return ret;
+#else
+	return 0;
+#endif
 }
 
 static int sunxi_drm_bind(struct device *dev)
@@ -928,6 +949,7 @@ static int sunxi_drm_bind(struct device *dev)
 	commit_init_connecting(drm);
 #endif
 	ret = drm_dev_register(drm, 0);
+	sunxi_drm_fbdev_init(drm);
 	ret = sysfs_create_group(&dev->kobj, &sunxi_crtc_group);
 
 	DRM_INFO("%s ok\n", __FUNCTION__);
