@@ -39,6 +39,8 @@
 #define DRIVER_MAJOR 3
 #define DRIVER_MINOR 0
 
+#define BOOT_ENABLE
+
 struct sunxi_init_connecting {
 	struct list_head list;
 	struct drm_crtc *crtc;
@@ -48,7 +50,7 @@ struct sunxi_init_connecting {
 	//TODO add eotf colorspace etc
 };
 
-#if 0
+#ifdef BOOT_ENABLE
 struct display_boot_info {
 	unsigned int de_id;
 	unsigned int tcon_id;
@@ -71,12 +73,12 @@ struct display_boot_info {
 	struct sunxi_logo_info logo;
 	struct list_head list;
 };
-#endif
 
 struct sunxi_drm_pri {
 	struct list_head connecting_head;
-	//struct list_head boot_info_head;
+	struct list_head boot_info_head;
 };
+#endif
 
 extern struct platform_driver sunxi_de_platform_driver;
 extern struct platform_driver sunxi_hdmi_platform_driver;
@@ -88,7 +90,6 @@ extern struct platform_driver sunxi_lvds_platform_driver;
 extern struct platform_driver sunxi_rgb_platform_driver;
 extern struct platform_driver sunxi_dsi_combo_phy_platform_driver;
 
-int sunxi_drm_fbdev_init(struct drm_device *dev);
 int sunxi_fbdev_init(struct drm_device *drm, struct display_channel_state *out_state);
 int sunxi_drm_plane_property_create(struct sunxi_drm_private *private);
 
@@ -492,7 +493,7 @@ static struct attribute_group sunxi_crtc_group = {
 
 static int __maybe_unused commit_init_connecting(struct drm_device *drm)
 {
-#if 0
+#ifdef BOOT_ENABLE
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(drm);
 	struct drm_modeset_acquire_ctx ctx;
 	struct drm_atomic_state *state;
@@ -597,7 +598,7 @@ backoff:
 
 static int get_boot_display_info(struct drm_device *drm)
 {
-#if 0
+#ifdef BOOT_ENABLE
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(drm);
 	struct display_boot_info *info;
 	struct drm_display_mode *mode;
@@ -675,7 +676,7 @@ static int get_boot_display_info(struct drm_device *drm)
 static int init_connecting(struct drm_device *drm, struct drm_crtc **crtcs, unsigned int crtc_cnt,
 				struct drm_connector **connectors, unsigned int connector_cnt)
 {
-#if 0
+#ifdef BOOT_ENABLE
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(drm);
 	struct sunxi_init_connecting *c;
 	struct sunxi_drm_device *sdrm;
@@ -775,7 +776,7 @@ static int init_connecting(struct drm_device *drm, struct drm_crtc **crtcs, unsi
 int sunxi_drm_get_logo_info(struct drm_device *dev, struct sunxi_logo_info *logo,
 				unsigned int *scn_w, unsigned int *scn_h)
 {
-#if 0
+#ifdef BOOT_ENABLE
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(dev);
 	struct display_boot_info *info;
 	struct sunxi_init_connecting *c;
@@ -802,7 +803,7 @@ int sunxi_drm_get_logo_info(struct drm_device *dev, struct sunxi_logo_info *logo
 
 bool sunxi_drm_check_if_need_sw_enable(struct drm_connector *connector)
 {
-#if 0
+#ifdef BOOT_ENABLE
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(connector->dev);
 	struct sunxi_init_connecting *c;
 	struct display_boot_info *info;
@@ -822,7 +823,7 @@ bool sunxi_drm_check_if_need_sw_enable(struct drm_connector *connector)
 bool sunxi_drm_check_device_boot_enabled(struct drm_device *drm,
 			unsigned int connector_type, unsigned int hw_id)
 {
-#if 0
+#ifdef BOOT_ENABLE
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(drm);
 	struct display_boot_info *info;
 
@@ -837,7 +838,7 @@ bool sunxi_drm_check_device_boot_enabled(struct drm_device *drm,
 
 void sunxi_drm_signal_sw_enable_done(struct drm_crtc *crtc)
 {
-#if 0
+#ifdef BOOT_ENABLE
 	struct sunxi_drm_private *pri = to_sunxi_drm_private(crtc->dev);
 	struct sunxi_init_connecting *c;
 	list_for_each_entry(c, &pri->priv->connecting_head, list) {
@@ -851,7 +852,7 @@ void sunxi_drm_signal_sw_enable_done(struct drm_crtc *crtc)
 
 static int __maybe_unused setup_bootloader_connecting_state(struct drm_device *drm)
 {
-#if 0
+#ifdef BOOT_ENABLE
 	struct drm_connector_list_iter conn_iter;
 	struct drm_connector *connector, **connectors = NULL;
 	unsigned int connector_count = 0;
@@ -949,7 +950,6 @@ static int sunxi_drm_bind(struct device *dev)
 	commit_init_connecting(drm);
 #endif
 	ret = drm_dev_register(drm, 0);
-	sunxi_drm_fbdev_init(drm);
 	ret = sysfs_create_group(&dev->kobj, &sunxi_crtc_group);
 
 	DRM_INFO("%s ok\n", __FUNCTION__);
