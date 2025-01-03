@@ -1,0 +1,32 @@
+/*
+ * Allwinner Technology CO., Ltd.
+ */
+
+/dts-v1/;
+
+#include "sun55i-t527-bananapi-f5.dts"
+
+&de {
+	chn_cfg_mode = <3>;
+	status = "okay";
+};
+
+&pwm1_1 {
+	status = "okay";
+};
+
+&edp_panel_backlight {
+	status = "okay";
+};
+
+&edp_panel {
+	status = "okay";
+};
+
+&drm_edp {
+	status = "okay";
+};
+
+&tv1 {
+	status = "okay";
+};
