@@ -1,0 +1,23 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment@0 {
+		target = <&spi1>;
+
+		__overlay__ {
+			status = "okay";
+
+			sunxi,spi-bus-mode = <SUNXI_SPI_BUS_NOR>;
+			sunxi,spi-cs-mode = <SUNXI_SPI_CS_SOFT>;
+
+			spiflash: w25q128@0 {
+				compatible = "w25q128", "jedec,spi-nor", "winbond,w25q128";
+				#address-cells = <1>;
+				#size-cells = <1>;
+				spi-max-frequency = <100000000>;
+				reg = <0>;
+			};
+		};
+	};
+};

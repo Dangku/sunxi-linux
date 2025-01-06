@@ -2865,7 +2865,7 @@
 		bat_power_supply: bat-power-supply {
 			compatible = "x-powers,axp2202-bat-power-supply";
 			param = <&axp2202_parameter>;
-			status = "okay";
+			status = "disabled";
 
 			pmu_chg_ic_temp = <0>;
 
@@ -3233,7 +3233,7 @@
 		pagesize = <32>;
 	};
 
-	hym8563@51 {
+	hym8365: hym8563@51 {
 		compatible = "haoyu,hym8563";
 		status = "okay";
 		reg = <0x51>;
@@ -3692,7 +3692,7 @@
 	/* soundcard-mach,bitclock-inversion; */
 	soundcard-mach,slot-num		= <2>;
 	soundcard-mach,slot-width	= <32>;
-	soundcard-mach,capture-only;
+	/* soundcard-mach,capture-only; */
 	status		= "disabled";
 	i2s0_cpu: soundcard-mach,cpu {
 		sound-dai = <&i2s0_plat>;
@@ -3706,8 +3706,6 @@
 		soundcard-mach,mclk-fs	= <1>;
 	};
 	i2s0_codec: soundcard-mach,codec {
-		//sound-dai               = <&ac107>;
-		soundcard-mach,pll-fs   = <1>;
 	};
 };
 
