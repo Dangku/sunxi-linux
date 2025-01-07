@@ -594,11 +594,9 @@ static irqreturn_t sunxi_pcie_host_msi_irq_handler(int irq, void *arg)
 		pos = 0;
 		val = status;
 		while ((pos = find_next_bit(&val, MAX_MSI_IRQS_PER_CTRL, pos)) != MAX_MSI_IRQS_PER_CTRL) {
-
-			generic_handle_domain_irq(pp->irq_domain, (i * MAX_MSI_IRQS_PER_CTRL) + pos);
-
 			sunxi_pcie_writel_dbi(pci,
-					PCIE_MSI_INTR_STATUS + (i * MSI_REG_CTRL_BLOCK_SIZE), 1 << pos);
+                                        PCIE_MSI_INTR_STATUS + (i * MSI_REG_CTRL_BLOCK_SIZE), 1 << pos);
+			generic_handle_domain_irq(pp->irq_domain, (i * MAX_MSI_IRQS_PER_CTRL) + pos);
 			pos++;
 		}
 	}
