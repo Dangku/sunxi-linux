@@ -2,6 +2,7 @@
 dtbo-$(CONFIG_ARCH_SUNXI) += \
 	sun55i-t527-i2c1.dtbo \
 	sun55i-t527-i2c4.dtbo \
+	sun55i-t527-i2c4-pb.dtbo \
 	sun55i-t527-i2c5.dtbo \
 	sun55i-t527-i2c5-eeprom.dtbo \
 	sun55i-t527-i2c5-rtc.dtbo \

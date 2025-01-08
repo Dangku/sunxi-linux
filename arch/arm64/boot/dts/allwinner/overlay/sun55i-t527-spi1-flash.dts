@@ -1,6 +1,8 @@
 /dts-v1/;
 /plugin/;
 
+#include <dt-bindings/spi/sunxi-spi.h>
+
 / {
 	fragment@0 {
 		target = <&spi1>;
