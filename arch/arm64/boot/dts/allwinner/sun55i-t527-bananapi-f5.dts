@@ -3837,6 +3837,10 @@
 	cpu-supply = <&reg_dcdc1>;
 };
 
+&cpu4 {
+	cpu-supply = <&reg_ext_axp1530_dcdc1>;
+};
+
 &dsufreq {
 	dsu-supply = <&reg_dcdc1>;
 };
