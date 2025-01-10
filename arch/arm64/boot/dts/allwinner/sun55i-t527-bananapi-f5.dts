@@ -3877,8 +3877,11 @@
 	pinctrl-1 = <&gmac1_pins_sleep>;
 	aw,soc-phy25m;
 	tx-delay = <1>;
-	rx-delay = <1>;
-	dwmac3v3-supply = <&vdd3v3_sys>;
+	rx-delay = <4>;
+	vdd-supply = <&vdd3v3_sys>;  /* 3.3v */
+	dwmac-supply = <&reg_bldo4>; /* 1.8v */
+	phy-supply = <&reg_bldo4>;   /* 1.8v */
+	power-vol = <1800000>;
 	status = "okay";
 };
 

@@ -157,8 +157,10 @@ struct sunxi_dwmac {
 	struct reset_control *hsi_rst;
 	struct device *dev;
 	void __iomem *syscfg_base;
-	struct regulator *dwmac3v3_supply;
-	struct regulator *phy3v3_supply;
+	struct regulator *vdd_supply;
+	struct regulator *dwmac_supply;
+	struct regulator *phy_supply;
+	u32 power_vol;
 
 	u32 tx_delay; /* adjust transmit clock delay */
 	u32 rx_delay; /* adjust receive clock delay */

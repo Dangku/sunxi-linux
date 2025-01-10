@@ -194,50 +194,66 @@ static int sunxi_dwmac_power_on(struct sunxi_dwmac *chip)
 {
 	int ret;
 
-	/* set dwmac pin bank voltage to 3.3v */
-	if (!IS_ERR(chip->dwmac3v3_supply)) {
-		ret = regulator_set_voltage(chip->dwmac3v3_supply, 3300000, 3300000);
+	/* set vdd voltage to 3.3v */
+	if (!IS_ERR(chip->vdd_supply)) {
+		ret = regulator_set_voltage(chip->vdd_supply, 3300000, 3300000);
 		if (ret) {
-			sunxi_err(chip->dev, "Set dwmac3v3-supply voltage 3300000 failed %d\n", ret);
-			goto err_dwmac3v3;
+			sunxi_err(chip->dev, "Set vdd_supply voltage 3300000 failed %d\n", ret);
 		}
 
-		ret = regulator_enable(chip->dwmac3v3_supply);
+		ret = regulator_enable(chip->vdd_supply);
 		if (ret) {
-			sunxi_err(chip->dev, "Enable dwmac3v3-supply failed %d\n", ret);
-			goto err_dwmac3v3;
+			sunxi_err(chip->dev, "Enable vdd-supply failed %d\n", ret);
 		}
 	}
 
-	/* set phy voltage to 3.3v */
-	if (!IS_ERR(chip->phy3v3_supply)) {
-		ret = regulator_set_voltage(chip->phy3v3_supply, 3300000, 3300000);
+	/* set dwmac pin bank voltage */
+	if (!IS_ERR(chip->dwmac_supply)) {
+		ret = regulator_set_voltage(chip->dwmac_supply, chip->power_vol, chip->power_vol);
 		if (ret) {
-			sunxi_err(chip->dev, "Set phy3v3-supply voltage 3300000 failed %d\n", ret);
-			goto err_phy3v3;
+			sunxi_err(chip->dev, "Set dwmac-supply voltage %d failed %d\n", chip->power_vol, ret);
+			goto err_dwmac;
 		}
 
-		ret = regulator_enable(chip->phy3v3_supply);
+		ret = regulator_enable(chip->dwmac_supply);
 		if (ret) {
-			sunxi_err(chip->dev, "Enable phy3v3-supply failed\n");
-			goto err_phy3v3;
+			sunxi_err(chip->dev, "Enable dwmac-supply failed %d\n", ret);
+			goto err_dwmac;
+		}
+	}
+
+	/* set phy voltage */
+	if (!IS_ERR(chip->phy_supply)) {
+		ret = regulator_set_voltage(chip->phy_supply, chip->power_vol, chip->power_vol);
+		if (ret) {
+			sunxi_err(chip->dev, "Set phy-supply voltage %d failed %d\n", chip->power_vol, ret);
+			goto err_phy;
+		}
+
+		ret = regulator_enable(chip->phy_supply);
+		if (ret) {
+			sunxi_err(chip->dev, "Enable phy-supply failed\n");
+			goto err_phy;
 		}
 	}
 
 	return 0;
 
-err_phy3v3:
-	regulator_disable(chip->dwmac3v3_supply);
-err_dwmac3v3:
+err_phy:
+	regulator_disable(chip->dwmac_supply);
+err_dwmac:
+	regulator_disable(chip->vdd_supply);
 	return ret;
 }
 
 static void sunxi_dwmac_power_off(struct sunxi_dwmac *chip)
 {
-	if (!IS_ERR(chip->phy3v3_supply))
-		regulator_disable(chip->phy3v3_supply);
-	if (!IS_ERR(chip->dwmac3v3_supply))
-		regulator_disable(chip->dwmac3v3_supply);
+	if (!IS_ERR(chip->phy_supply))
+		regulator_disable(chip->phy_supply);
+	if (!IS_ERR(chip->dwmac_supply))
+		regulator_disable(chip->dwmac_supply);
+	if (!IS_ERR(chip->vdd_supply))
+		regulator_disable(chip->vdd_supply);
 }
 
 static int sunxi_dwmac_clk_init(struct sunxi_dwmac *chip)
@@ -547,13 +563,23 @@ static int sunxi_dwmac_resource_get(struct platform_device *pdev, struct sunxi_d
 		return -EINVAL;
 	}
 
-	chip->dwmac3v3_supply = devm_regulator_get_optional(&pdev->dev, "dwmac3v3");
-	if (IS_ERR(chip->dwmac3v3_supply))
-		sunxi_warn(dev, "Not found dwmac3v3-supply\n");
+	chip->vdd_supply = devm_regulator_get_optional(&pdev->dev, "vdd");
+	if (IS_ERR(chip->vdd_supply))
+		sunxi_warn(dev, "Not found vdd-supply\n");
 
-	chip->phy3v3_supply = devm_regulator_get_optional(&pdev->dev, "phy3v3");
-	if (IS_ERR(chip->phy3v3_supply))
-		sunxi_warn(dev, "Not found phy3v3-supply\n");
+	chip->dwmac_supply = devm_regulator_get_optional(&pdev->dev, "dwmac");
+	if (IS_ERR(chip->dwmac_supply))
+		sunxi_warn(dev, "Not found dwmac-supply\n");
+
+	chip->phy_supply = devm_regulator_get_optional(&pdev->dev, "phy");
+	if (IS_ERR(chip->phy_supply))
+		sunxi_warn(dev, "Not found phy-supply\n");
+
+	ret = of_property_read_u32(np, "power-vol", &chip->power_vol);
+	if (ret) {
+		sunxi_warn(dev, "Get gmac power-vol failed\n");
+		return -EINVAL;
+	}
 
 	ret = of_property_read_u32(np, "tx-delay", &chip->tx_delay);
 	if (ret) {
