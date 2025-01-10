@@ -150,12 +150,29 @@ static int get_addr_by_name(int fmt, char *addr, char *name)
 		return -1;
 	}
 
-	if (fmt == ADDR_FMT_STR)
-		sprintf(addr, "%02X:%02X:%02X:%02X:%02X:%02X",
+	if (strcmp("eth", name) == 0) {
+		if (fmt == ADDR_FMT_STR) {
+			/* eth0 */
+			sprintf(addr, "0A:%02X:%02X:%02X:%02X:%02X",
+				t->addr[1], t->addr[2],
+				t->addr[3], t->addr[4], t->addr[5]);
+			ADDR_MGT_ERR("eth0 mac addr is %s\n", addr);
+		} else {
+			/* eth1 */
+			sprintf(addr, "0C:%02X:%02X:%02X:%02X:%02X",
+				t->addr[1], t->addr[2],
+				t->addr[3], t->addr[4], t->addr[5]);
+			ADDR_MGT_ERR("eth1 mac addr is %s\n", addr);
+		}
+        } else {
+		if (fmt == ADDR_FMT_STR)
+			sprintf(addr, "%02X:%02X:%02X:%02X:%02X:%02X",
 				t->addr[0], t->addr[1], t->addr[2],
 				t->addr[3], t->addr[4], t->addr[5]);
-	else
-		memcpy(addr, t->addr, ADDR_VAL_LEN);
+		else
+			memcpy(addr, t->addr, ADDR_VAL_LEN);
+	}
+
 
 	return t->type_cur;
 }
@@ -379,7 +396,11 @@ static struct platform_driver addr_mgt_driver = {
 	},
 };
 
-module_platform_driver_probe(addr_mgt_driver, addr_mgt_probe);
+static int __init addr_mgt_init(void)
+{
+	return platform_driver_register(&addr_mgt_driver);
+}
+fs_initcall(addr_mgt_init);
 
 MODULE_AUTHOR("Allwinnertech");
 MODULE_DESCRIPTION("Network MAC Addess Manager");

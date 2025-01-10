@@ -3447,9 +3447,9 @@
 
 &addr_mgt {
 	compatible     = "allwinner,sunxi-addr_mgt";
-	type_addr_wifi = <0x0>;
-	type_addr_bt   = <0x0>;
-	type_addr_eth  = <0x0>;
+	type_addr_wifi = <0x2>;
+	type_addr_bt   = <0x2>;
+	type_addr_eth  = <0x2>;
 	status         = "okay";
 };
 

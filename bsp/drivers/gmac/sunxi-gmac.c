@@ -238,9 +238,7 @@ static char sunxi_gmac_test_strings[][ETH_GSTRING_LEN] = {
 	"External lb test (phy loopback)",
 };
 
-#ifdef MODULE
 extern int get_custom_mac_address(int fmt, char *name, char *addr);
-#endif
 
 static char mac_str[MAC_ADDR_LEN] = SUNXI_GMAC_MAC_ADDRESS;
 module_param_string(mac_str, mac_str, MAC_ADDR_LEN, S_IRUGO | S_IWUSR);
@@ -1969,11 +1967,7 @@ static void sunxi_gmac_check_addr(struct net_device *ndev, unsigned char *mac)
 			dev_addr_mod(ndev, i, &tmp_addr[i], sizeof(char));
 #endif
 		}
-
-		if (!is_valid_ether_addr(ndev->dev_addr)) {
-			eth_random_addr((u8 *)ndev->dev_addr);
-			netdev_info(ndev, "Info: Use random mac address\n");
-		}
+		netdev_info(ndev, "Info: Use mac_str address\n");
 	}
 }
 
@@ -3563,11 +3557,18 @@ static int sunxi_gmac_probe(struct platform_device *pdev)
 		goto register_err;
 	}
 
-#ifdef MODULE
-	get_custom_mac_address(0, "eth", mac_str);
-#endif
 	/* Before open the device, the mac address should be set */
 	sunxi_gmac_check_addr(ndev, mac_str);
+	if (!is_valid_ether_addr(ndev->dev_addr)) {
+		get_custom_mac_address(0, "eth", mac_str);
+		sunxi_gmac_check_addr(ndev, mac_str);
+		netdev_info(ndev, "Info: Use addr_mgt mac address\n");
+	}
+
+	if (!is_valid_ether_addr(ndev->dev_addr)) {
+		eth_random_addr((u8 *)ndev->dev_addr);
+		netdev_info(ndev, "Info: Use random mac address\n");
+	}
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)
 	memcpy(ndev->dev_addr_shadow, ndev->dev_addr, 18);
@@ -3645,7 +3646,6 @@ static struct platform_driver sunxi_gmac_driver = {
 };
 module_platform_driver(sunxi_gmac_driver);
 
-#ifndef MODULE
 static int __init sunxi_gmac_set_mac_addr(char *str)
 {
 	char *p = str;
@@ -3664,8 +3664,7 @@ static int __init sunxi_gmac_set_mac_addr(char *str)
  * parsing the mac address becomes a problem.
  * Maybe use this way: mac0_addr=, mac1_addr=
  */
-__setup("mac_addr=", sunxi_gmac_set_mac_addr);
-#endif /* MODULE */
+__setup("mac0_addr=", sunxi_gmac_set_mac_addr);
 
 MODULE_DESCRIPTION("Allwinner GMAC driver");
 MODULE_AUTHOR("xuminghui <xuminghui@allwinnertech.com>");
