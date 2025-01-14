@@ -2,7 +2,8 @@
 #
 # Makefile for the usb host drivers.
 #
-ccflags-y += -I$(srctree)/drivers/usb/host
+ccflags-y += -I $(srctree)/drivers/usb/host
+ccflags-y += -I $(srctree)/bsp/drivers/usb/host
 
 obj-$(CONFIG_USB_EHCI_HCD_SUNXI)	+= ehci-sunxi.o
 obj-$(CONFIG_USB_OHCI_HCD_SUNXI)	+= ohci-sunxi.o

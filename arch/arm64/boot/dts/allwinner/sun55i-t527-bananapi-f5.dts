@@ -3276,7 +3276,7 @@
 	gt9xx_secondary: gt9xx_secondary@5d {
 		compatible = "goodix,gt9xx_secondary";
 		reg = <0x5d>;
-		status = "okay";
+		status = "disabled";
 		irq-gpios = <&pio PJ 26 GPIO_ACTIVE_LOW>;
 		irq-flags = <2>;
 		reset-gpios = <&pio PJ 27 GPIO_ACTIVE_LOW>;

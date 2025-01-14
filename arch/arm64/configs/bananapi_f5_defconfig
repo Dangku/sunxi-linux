@@ -1247,6 +1247,7 @@ CONFIG_AW_SID=y
 #
 CONFIG_AW_PCIE_RC=y
 # CONFIG_AW_PCIE_EP is not set
+# CONFIG_AW_PCIE_NONE is not set
 # end of PCIe Drivers
 
 #
@@ -1323,6 +1324,8 @@ CONFIG_USB_SUNXI_UDC0=y
 #
 # USB Type-C Multiplexer/DeMultiplexer Switch support
 #
+# CONFIG_TYPEC_MUX_GPIO_GMA340 is not set
+# CONFIG_TYPEC_MUX_SUNXI_PHY_SWITCHER is not set
 # end of USB Type-C Multiplexer/DeMultiplexer Switch support
 # end of USB Type-C Support
 
@@ -1331,6 +1334,18 @@ CONFIG_USB_SUNXI_UDC0=y
 #
 # CONFIG_USB_SUNXI_GADGET is not set
 # end of USB Gadget Drivers
+
+#
+# USB EXTCON Support
+#
+# CONFIG_USB_SUNXI_EXTCON is not set
+# end of USB EXTCON Support
+
+#
+# USB PHY Support
+#
+# CONFIG_USB_SUNXI_PHY is not set
+# end of USB PHY Support
 # end of USB Drivers
 
 #
@@ -1601,6 +1616,7 @@ CONFIG_AW_EVENT_DDR=y
 #
 CONFIG_AW_SUNXI_DSUFREQ=y
 # CONFIG_AW_SUNXI_DSUFREQ_TEST is not set
+CONFIG_AW_SUNXI_DSUFREQ_ADJUST=y
 # end of sunxi dsufreq Drivers
 
 #
