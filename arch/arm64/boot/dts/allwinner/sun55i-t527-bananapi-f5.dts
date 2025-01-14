@@ -2050,6 +2050,10 @@
 	status = "disabled";
 };
 
+&pwm0 {
+	status = "disabled";
+};
+
 &pwm0_0 {
 	pinctrl-names = "active", "sleep";
 	pinctrl-0 = <&pwm0_0_pin_active>;
@@ -2155,10 +2159,18 @@
 	status = "okay";
 };
 
+&pwm1 {
+	status = "disabled";
+};
+
 &pwm1_1 {
 	pinctrl-names = "active", "sleep";
 	pinctrl-0 = <&pwm1_1_pin_active>;
 	pinctrl-1 = <&pwm1_1_pin_sleep>;
+	status = "disabled";
+};
+
+&mcu_pwm0 {
 	status = "disabled";
 };
 

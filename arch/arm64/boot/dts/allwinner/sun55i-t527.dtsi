@@ -3256,7 +3256,7 @@
 			pwm-number = <4>;
 			pwm-base = <0x10>;
 			sunxi-pwms = <&pwm1_0>, <&pwm1_1>, <&pwm1_2>, <&pwm1_3>;
-			status = "okay";
+			status = "disabled";
 		};
 
 		pwm1_0: pwm1_0@2051010 {
@@ -3333,7 +3333,7 @@
 			pwm-base = <0x16>;
 			sunxi-pwms = <&mcu_pwm0_0>, <&mcu_pwm0_1>, <&mcu_pwm0_2>, <&mcu_pwm0_3>,
 			<&mcu_pwm0_4>,<&mcu_pwm0_5>, <&mcu_pwm0_6>, <&mcu_pwm0_7>;
-			status = "okay";
+			status = "disabled";
 		};
 
 		mcu_pwm0_0: mcu_pwm0_0@7103010 {
