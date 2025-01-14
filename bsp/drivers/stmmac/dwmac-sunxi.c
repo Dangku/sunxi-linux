@@ -872,6 +872,7 @@ static struct platform_driver sunxi_dwmac_driver = {
 };
 module_platform_driver(sunxi_dwmac_driver);
 
+#ifndef MODULE
 static int __init sunxi_dwmac_set_mac_addr(char *str)
 {
 	char *p = str;
@@ -882,6 +883,7 @@ static int __init sunxi_dwmac_set_mac_addr(char *str)
 	return 0;
 }
 __setup("mac1_addr=", sunxi_dwmac_set_mac_addr);
+#endif
 
 MODULE_DESCRIPTION("Allwinner DWMAC driver");
 MODULE_AUTHOR("wujiayi <wujiayi@allwinnertech.com>");

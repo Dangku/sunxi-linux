@@ -31,7 +31,9 @@
 #include "internal.h"
 #include "sunxi-rfkill.h"
 
-//#define SUNXI_BLUETOOTH_RFKILL
+#ifdef CONFIG_ANDROID
+#define SUNXI_BLUETOOTH_RFKILL
+#endif
 
 static struct sunxi_bt_platdata *bluetooth_data;
 static const struct of_device_id sunxi_bt_ids[];

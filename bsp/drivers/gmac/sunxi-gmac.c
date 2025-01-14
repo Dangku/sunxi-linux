@@ -3646,6 +3646,7 @@ static struct platform_driver sunxi_gmac_driver = {
 };
 module_platform_driver(sunxi_gmac_driver);
 
+#ifndef MODULE
 static int __init sunxi_gmac_set_mac_addr(char *str)
 {
 	char *p = str;
@@ -3665,6 +3666,7 @@ static int __init sunxi_gmac_set_mac_addr(char *str)
  * Maybe use this way: mac0_addr=, mac1_addr=
  */
 __setup("mac0_addr=", sunxi_gmac_set_mac_addr);
+#endif
 
 MODULE_DESCRIPTION("Allwinner GMAC driver");
 MODULE_AUTHOR("xuminghui <xuminghui@allwinnertech.com>");
