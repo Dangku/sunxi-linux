@@ -3134,20 +3134,7 @@ static void sunxi_mmc_cqe_disable(struct mmc_host *mmc, bool recovery)
 		if (!(cqhci_readl(cq_host, CQHCI_CTL) & CQHCI_HALT)) {
 			SM_ERR(mmc_dev(host->mmc), "cqhci halt timeout when recovery doing!\n");
 		}
-	} else {
-		/*have to avoid cqe intr residual to non cmdq*/
-		rval = cqhci_readl(cq_host, CQHCI_IS);
-		cqhci_writel(cq_host, rval, CQHCI_IS);
 	}
-
-	/*It is necessary to ensure that the device end is in a non busy state
-	 * before the original controller;
-	* Avoid sending commands while busy on the device side*/
-	if (sunxi_check_r1_ready_may_sleep(host)) {
-		SM_ERR(mmc_dev(mmc), "sure mmc ready fail: %s %d\n",
-			__func__, __LINE__);
-	}
-
 	host->cqe_on = false;
 	host->has_recovery = true;
 }
