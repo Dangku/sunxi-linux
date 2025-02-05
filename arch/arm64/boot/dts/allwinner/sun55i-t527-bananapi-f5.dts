@@ -2051,7 +2051,7 @@
 };
 
 &pwm0 {
-	status = "disabled";
+	status = "okay";
 };
 
 &pwm0_0 {
